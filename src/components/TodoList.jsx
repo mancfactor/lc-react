@@ -5,6 +5,7 @@ import TodoClearCompleted from './TodoClearCompleted';
 import TodoCheckAll from './TodoCheckAll';
 import TodoFilter from './TodoFilter';
 import useToggle from '../hooks/useToggle';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 function TodoList() {
   const [oneVisible, setOneVisible] = useToggle(true);
@@ -54,60 +55,66 @@ function TodoList() {
   }
   return (
     <>
-      <ul className="todo-list">
+      <TransitionGroup component="ul" className="todo-list">
         {filterTodos(filter).map((todo, index) => (
-          <li key={todo.id} className="todo-item-container">
-            <div className="todo-item">
-              <input
-                type="checkbox"
-                onChange={() => completeTodo(todo.id)}
-                checked={todo.isComplete ? true : false}
-              />
-              {!todo.isEditing ? (
-                <span
-                  onDoubleClick={() => markAsEditing(todo.id)}
-                  className={`todo-item-label ${
-                    todo.isComplete ? 'line-through' : ''
-                  }`}
-                >
-                  {todo.title}
-                </span>
-              ) : (
+          <CSSTransition
+            key={todo.id}
+            classNames="slide-horizontal"
+            timeout={300}
+          >
+            <li className="todo-item-container">
+              <div className="todo-item">
                 <input
-                  type="text"
-                  className="todo-item-input"
-                  defaultValue={todo.title}
-                  autoFocus
-                  onBlur={event => updateTodo(event, todo.id)}
-                  onKeyDown={event => {
-                    if (event.key === 'Enter') {
-                      updateTodo(event, todo.id);
-                    } else if (event.key === 'Escape') {
-                      markAsEditing(todo.id);
-                    }
-                  }}
+                  type="checkbox"
+                  onChange={() => completeTodo(todo.id)}
+                  checked={todo.isComplete ? true : false}
                 />
-              )}
-            </div>
-            {/* pass the onClick as a callback if you dont want it to run when the component is instantiated */}
-            <button className="x-button" onClick={() => deleteTodo(todo.id)}>
-              <svg
-                className="x-button-icon"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </li>
+                {!todo.isEditing ? (
+                  <span
+                    onDoubleClick={() => markAsEditing(todo.id)}
+                    className={`todo-item-label ${
+                      todo.isComplete ? 'line-through' : ''
+                    }`}
+                  >
+                    {todo.title}
+                  </span>
+                ) : (
+                  <input
+                    type="text"
+                    className="todo-item-input"
+                    defaultValue={todo.title}
+                    autoFocus
+                    onBlur={event => updateTodo(event, todo.id)}
+                    onKeyDown={event => {
+                      if (event.key === 'Enter') {
+                        updateTodo(event, todo.id);
+                      } else if (event.key === 'Escape') {
+                        markAsEditing(todo.id);
+                      }
+                    }}
+                  />
+                )}
+              </div>
+              {/* pass the onClick as a callback if you dont want it to run when the component is instantiated */}
+              <button className="x-button" onClick={() => deleteTodo(todo.id)}>
+                <svg
+                  className="x-button-icon"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </li>
+          </CSSTransition>
         ))}
-      </ul>
+      </TransitionGroup>
 
       <div className="toggles-container">
         <button className="button" onClick={setOneVisible}>
@@ -118,25 +125,30 @@ function TodoList() {
         </button>
       </div>
 
-      {oneVisible && (
+      <CSSTransition
+        in={oneVisible}
+        timeout={300}
+        classNames="slide-vertical"
+        unmountOnExit
+      >
         <div className="check-all-container">
-          <div>
-            <TodoCheckAll />
-          </div>
+          <TodoCheckAll />
 
           <TodoItemsRemaining />
         </div>
-      )}
-
-      {twoVisible && (
+      </CSSTransition>
+      <CSSTransition
+        in={twoVisible}
+        timeout={300}
+        classNames="slide-vertical"
+        unmountOnExit
+      >
         <div className="other-buttons-container">
           <TodoFilter />
 
-          <div>
-            <TodoClearCompleted />
-          </div>
+          <TodoClearCompleted />
         </div>
-      )}
+      </CSSTransition>
     </>
   );
 }
