@@ -15,7 +15,6 @@ body {
 
 .todo-app-container {
   min-height: 100vh;
-  padding: 10px;
   background: #f3f4f6;
 }
 
@@ -197,4 +196,29 @@ h2 {
   opacity: 0;
   transition: all 300ms;
   transform: translateX(20px);
+}
+
+nav {
+  background: white;
+  padding: 16px;
+}
+
+nav ul {
+  display: flex;
+  justify-content: center;
+  margin: auto;
+}
+
+nav ul li:not(:first-child) {
+  margin-left: 16px;
+}
+
+.container {
+  margin: auto;
+  padding-top: 24px;
+  max-width: 48rem;
+}
+
+.active {
+  font-weight: bold;
 }
